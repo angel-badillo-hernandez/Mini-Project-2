@@ -1,4 +1,5 @@
-
+// ─── Mini Project 2 ──────────────────────────────────────────────────────────
+// ─── Angel Badillo, Blake Gauna ──────────────────────────────────────────────
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
