@@ -8,14 +8,22 @@ const int A_SIZE = 10000;
 int A[A_SIZE];
 int total = 0;
 
+/**
+ * @brief Adds 2000 elements from a portion of the array in
+ *  a non-cyclic manner.
+ *
+ * @param tid thread id
+ * @return void*
+ */
 void *add_elements(void *tid)
 {
-	// Each thread computes sum of 1/4th of array
 	int threadIdx = (long)tid;
 	for (int idx = threadIdx * (A_SIZE / NUM_THREADS); idx < (threadIdx + 1) * (A_SIZE / NUM_THREADS); idx++)
 	{
+		// get exclusive access to the "total" variable
 		pthread_mutex_lock(&the_mutex);
 		total += A[idx];
+		// release access
 		pthread_mutex_unlock(&the_mutex);
 	}
 	pthread_exit(NULL);
@@ -28,9 +36,11 @@ int main()
 {
 	// Array of threads
 	pthread_t threads[NUM_THREADS];
+
+	// Status code for result of pthread_create
 	int status;
 
-	// Intialize array to values
+	// Intialize array
 	for (int i = 0; i < A_SIZE; i++)
 		A[i] = i % 257;
 
@@ -38,15 +48,20 @@ int main()
 	for (int i = 0; i < NUM_THREADS; i++)
 	{
 		status = pthread_create(&threads[i], NULL, add_elements, (void *)(intptr_t)i);
-		if(status)
-		{printf("Oops. pthread_create returned error code %d", status);
-      	exit(EXIT_FAILURE);}
+		
+		// If status is not 0, error occured
+		if (status)
+		{
+			printf("Oops. pthread_create returned error code %d", status);
+			exit(EXIT_FAILURE);
+		}
 	}
 
-	// joining all threads
+	// join threads
 	for (int i = 0; i < NUM_THREADS; i++)
 		pthread_join(threads[i], NULL);
 
+	// print the total
 	printf("sum is %d\n", total);
 	return EXIT_SUCCESS;
 }
