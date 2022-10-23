@@ -37,7 +37,8 @@ int main()
 {
 	// Array of threads
 	pthread_t threads[NUM_THREADS];
-
+	// Initialize mutex
+	pthread_mutex_init(&the_mutex, 0);
 	// Status code for result of pthread_create
 	int status;
 
@@ -61,7 +62,8 @@ int main()
 	// join threads
 	for (int i = 0; i < NUM_THREADS; i++)
 		pthread_join(threads[i], NULL);
-
+	// Destroy mutex
+	pthread_mutex_destroy(&the_mutex);
 	// print the total
 	printf("sum is %d\n", total);
 	return EXIT_SUCCESS;
