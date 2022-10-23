@@ -48,7 +48,7 @@ int main()
 	// Creating 5 threads
 	for (int i = 0; i < NUM_THREADS; i++)
 	{
-		status = pthread_create(&threads[i], NULL, add_elements, (void *)(intptr_t)i);
+		status = pthread_create(&threads[i], NULL, add_elements, (void *)(long)i);
 		
 		// If status is not 0, error occured
 		if (status)
