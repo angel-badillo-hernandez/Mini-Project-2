@@ -30,8 +30,6 @@ void *add_elements(void *tid)
 	pthread_exit(NULL);
 }
 
-// t1 = 250172
-// t2 = 503736
 // Result: 1277309
 int main()
 {
