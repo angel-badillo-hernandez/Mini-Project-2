@@ -1,3 +1,4 @@
+
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -6,41 +7,46 @@ const int NUM_THREADS = 5;
 const int A_SIZE = 10000;
 int A[A_SIZE];
 int total = 0;
-int part = 0;
 
-void* add_elements(void* arg)
+void *add_elements(void *tid)
 {
-
 	// Each thread computes sum of 1/4th of array
-	int thread_part = part++;
-
-    pthread_mutex_lock(&the_mutex);
-	for (int i = thread_part * (A_SIZE / 5); i < (thread_part + 1) * (A_SIZE / 5); i++)
-		total += A[i];
-    printf("sum is %d\n",total);
-    pthread_mutex_unlock(&the_mutex);
+	int threadIdx = (long)tid;
+	for (int idx = threadIdx * (A_SIZE / NUM_THREADS); idx < (threadIdx + 1) * (A_SIZE / NUM_THREADS); idx++)
+	{
+		pthread_mutex_lock(&the_mutex);
+		total += A[idx];
+		pthread_mutex_unlock(&the_mutex);
+	}
+	pthread_exit(NULL);
 }
-
 
 // t1 = 250172
 // t2 = 503736
 // Result: 1277309
 int main()
 {
-    for (int i = 0; i < A_SIZE; i++)
-        A[i] = i % 257;
-    
+	// Array of threads
+	pthread_t threads[NUM_THREADS];
+	int status;
 
-   pthread_t threads[NUM_THREADS];
+	// Intialize array to values
+	for (int i = 0; i < A_SIZE; i++)
+		A[i] = i % 257;
 
-	// Creating 4 threads
+	// Creating 5 threads
 	for (int i = 0; i < NUM_THREADS; i++)
-		pthread_create(&threads[i], NULL, add_elements, (void*)NULL);
+	{
+		status = pthread_create(&threads[i], NULL, add_elements, (void *)(intptr_t)i);
+		if(status)
+		{printf("Oops. pthread_create returned error code %d", status);
+      	exit(EXIT_FAILURE);}
+	}
 
-	// joining 4 threads i.e. waiting for all 4 threads to complete
+	// joining all threads
 	for (int i = 0; i < NUM_THREADS; i++)
 		pthread_join(threads[i], NULL);
 
-    printf("sum is %d\n",total);
-	return 0;
+	printf("sum is %d\n", total);
+	return EXIT_SUCCESS;
 }

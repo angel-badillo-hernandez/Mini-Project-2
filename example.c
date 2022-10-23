@@ -11,7 +11,7 @@ void *print_hello_world(void *tid) {
   pthread_exit(NULL);
 }
 
-int main(void) {
+int main() {
   // The main program creates 10 threads and then exits.
   pthread_t threads[NUM_THREADS];
   int status, i;
