@@ -1,8 +1,14 @@
 // ─── Mini Project 2 ──────────────────────────────────────────────────────────
 // ─── Angel Badillo, Blake Gauna ──────────────────────────────────────────────
+// Intializes a 10000 element array to i % 257 for each element, starting
+// at i = 1 up to i = 10000. Then, 5 pthreads will calculate the sum of all
+// elements in the array, and each thread processes from 
+// idx = threadIdx * 2000 until idx < (threadIdx + 1) * 2000, where threadIdx
+// ranges from 0 - 4.
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
+
 pthread_mutex_t the_mutex;
 const int NUM_THREADS = 5;
 const int A_SIZE = 10000;
@@ -31,19 +37,18 @@ void *add_elements(void *tid)
 	pthread_exit(NULL);
 }
 
-// Result: 1277309
 int main()
 {
 	// Array of threads
 	pthread_t threads[NUM_THREADS];
 	// Initialize mutex
-	pthread_mutex_init(&the_mutex, 0);
+	pthread_mutex_init(&the_mutex, NULL);
 	// Status code for result of pthread_create
 	int status;
 
 	// Intialize array
-	for (int i = 0; i < A_SIZE; i++)
-		A[i] = i % 257;
+	for (int i = 1; i <= A_SIZE; i++)
+		A[i-1] = i % 257;
 
 	// Creating 5 threads
 	for (int i = 0; i < NUM_THREADS; i++)
@@ -51,7 +56,7 @@ int main()
 		status = pthread_create(&threads[i], NULL, add_elements, (void *)(long)i);
 		
 		// If status is not 0, error occured
-		if (status)
+		if (status != 0)
 		{
 			printf("Oops. pthread_create returned error code %d", status);
 			exit(EXIT_FAILURE);
@@ -61,9 +66,11 @@ int main()
 	// join threads
 	for (int i = 0; i < NUM_THREADS; i++)
 		pthread_join(threads[i], NULL);
+
 	// Destroy mutex
 	pthread_mutex_destroy(&the_mutex);
+	
 	// print the total
-	printf("sum is %d\n", total);
+	printf("The sum is %d\n", total);
 	return EXIT_SUCCESS;
 }
