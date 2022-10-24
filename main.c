@@ -19,7 +19,8 @@ int total = 0;
 void *add_elements(void *tid)
 {
 	int threadIdx = (long)tid;
-	for (int idx = threadIdx * (A_SIZE / NUM_THREADS); idx < (threadIdx + 1) * (A_SIZE / NUM_THREADS); idx++)
+	for (int idx = threadIdx * (A_SIZE / NUM_THREADS); 
+	idx < (threadIdx + 1) * (A_SIZE / NUM_THREADS); idx++)
 	{
 		// get exclusive access to the "total" variable
 		pthread_mutex_lock(&the_mutex);
